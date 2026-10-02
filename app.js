@@ -1,6 +1,6 @@
 const CATEGORIAS = {
   ingreso: ['Salario', 'Ventas', 'Inversiones', 'Otros ingresos'],
-  gasto: ['Alimentación', 'Transporte', 'Vivienda', 'Salud', 'Educación', 'Entretenimiento', 'Otros gastos']
+  gasto: ['Alimentación', 'Transporte', 'Vivienda', 'Salud', 'Educación', 'Entretenimiento', 'Luz', 'Gas', 'Agua', 'Internet casa', 'Internet plan personal', 'Otros gastos']
 };
 const COLORES = ['#38bdf8', '#4ade80', '#f87171', '#fbbf24', '#a78bfa', '#f472b6', '#34d399', '#fb923c'];
 
@@ -10,7 +10,15 @@ let editId = null;
 
 const $ = id => document.getElementById(id);
 let metaAhorro = parseFloat(localStorage.getItem('jcho-meta-ahorro') || '0');
-let ahorrado = parseFloat(localStorage.getItem('jcho-ahorrado') || '0');
+let mesAhorroGuardado = localStorage.getItem('jcho-mes-ahorro') || '';
+const mesActual = new Date().toISOString().slice(0, 7);
+let ahorrado = mesAhorroGuardado === mesActual
+  ? parseFloat(localStorage.getItem('jcho-ahorrado') || '0')
+  : 0; // Reinicio automático cada mes
+if (mesAhorroGuardado !== mesActual) {
+  localStorage.setItem('jcho-mes-ahorro', mesActual);
+  localStorage.setItem('jcho-ahorrado', 0);
+}
 if (presupuesto > 0) $('presupuesto').value = presupuesto;
 if (metaAhorro > 0) $('meta-ahorro').value = metaAhorro;
 const form = $('form-transaccion');
@@ -57,6 +65,7 @@ $('aportar').addEventListener('click', () => {
   ahorrado += parseFloat($('aporte-ahorro').value) || 0;
   metaAhorro = parseFloat($('meta-ahorro').value) || 0;
   localStorage.setItem('jcho-ahorrado', ahorrado);
+  localStorage.setItem('jcho-mes-ahorro', mesActual);
   localStorage.setItem('jcho-meta-ahorro', metaAhorro);
   $('aporte-ahorro').value = '';
   render();
