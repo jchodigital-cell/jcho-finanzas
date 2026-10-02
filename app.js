@@ -5,8 +5,11 @@ const CATEGORIAS = {
 const COLORES = ['#38bdf8', '#4ade80', '#f87171', '#fbbf24', '#a78bfa', '#f472b6', '#34d399', '#fb923c'];
 
 let transacciones = JSON.parse(localStorage.getItem('jcho-transacciones') || '[]');
+let presupuesto = parseFloat(localStorage.getItem('jcho-presupuesto') || '0');
+let editId = null;
 
 const $ = id => document.getElementById(id);
+if (presupuesto > 0) $('presupuesto').value = presupuesto;
 const form = $('form-transaccion');
 const lista = $('lista-transacciones');
 
@@ -23,14 +26,21 @@ $('fecha').value = new Date().toISOString().slice(0, 10);
 
 form.addEventListener('submit', e => {
   e.preventDefault();
-  transacciones.push({
-    id: Date.now(),
+  const nueva = {
+    id: editId ?? Date.now(),
     tipo: $('tipo').value,
     monto: parseFloat($('monto').value),
     categoria: $('categoria').value,
     fecha: $('fecha').value,
     descripcion: $('descripcion').value.trim()
-  });
+  };
+  if (editId) {
+    transacciones = transacciones.map(t => t.id === editId ? nueva : t);
+    editId = null;
+    form.querySelector('button[type=submit]').textContent = 'Agregar';
+  } else {
+    transacciones.push(nueva);
+  }
   guardar();
   form.reset();
   $('fecha').value = new Date().toISOString().slice(0, 10);
@@ -39,6 +49,12 @@ form.addEventListener('submit', e => {
 });
 
 $('filtro-mes').addEventListener('change', render);
+$('buscar').addEventListener('input', render);
+$('guardar-presupuesto').addEventListener('click', () => {
+  presupuesto = parseFloat($('presupuesto').value) || 0;
+  localStorage.setItem('jcho-presupuesto', presupuesto);
+  render();
+});
 $('limpiar-filtro').addEventListener('click', () => { $('filtro-mes').value = ''; render(); });
 $('exportar').addEventListener('click', exportarCSV);
 
@@ -47,8 +63,10 @@ function guardar() {
 }
 
 function transaccionesFiltradas() {
-  const mes = $('filtro-mes').value; // 'YYYY-MM'
-  return transacciones.filter(t => !mes || t.fecha.startsWith(mes));
+  const mes = $('filtro-mes').value;
+  const q = ($('buscar').value || '').toLowerCase();
+  return transacciones.filter(t => (!mes || t.fecha.startsWith(mes)) &&
+    (!q || (t.descripcion || '').toLowerCase().includes(q) || t.categoria.toLowerCase().includes(q)));
 }
 
 function render() {
@@ -65,14 +83,32 @@ function render() {
   [...datos].sort((a, b) => b.fecha.localeCompare(a.fecha)).forEach(t => {
     const li = document.createElement('li');
     li.innerHTML = `<div><strong>${t.categoria}</strong> ${t.descripcion ? '— ' + escapeHtml(t.descripcion) : ''}<br><small>${t.fecha}</small></div>
-      <div><span class="monto ${t.tipo}">${t.tipo === 'gasto' ? '-' : '+'} ${fmt(t.monto)}</span>
-      <button data-id="${t.id}">✕</button></div>`;
-    li.querySelector('button').addEventListener('click', () => {
+      <div><span class="monto ${t.tipo}">${t.tipo === 'gasto' ? '-' : '+'} ${fmt(t.monto)}</span><br><button class="editar" data-id="${t.id}">✎</button><button data-id="${t.id}">✕</button></div>`;
+    li.querySelector('button:last-child').addEventListener('click', () => {
       transacciones = transacciones.filter(x => x.id !== t.id);
       guardar(); render();
     });
+    li.querySelector('.editar').addEventListener('click', () => {
+      editId = t.id;
+      $('tipo').value = t.tipo;
+      actualizarCategorias();
+      $('monto').value = t.monto;
+      $('categoria').value = t.categoria;
+      $('fecha').value = t.fecha;
+      $('descripcion').value = t.descripcion;
+      form.querySelector('button[type=submit]').textContent = 'Actualizar';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
     lista.appendChild(li);
   });
+
+  // Presupuesto
+  const gastosTotal = datos.filter(t => t.tipo === 'gasto').reduce((s, t) => s + t.monto, 0);
+  const pct = presupuesto > 0 ? Math.min(100, (gastosTotal / presupuesto) * 100) : 0;
+  $('barra-presupuesto').style.width = pct + '%';
+  $('texto-presupuesto').textContent = presupuesto > 0
+    ? `Gastaste S/ ${gastosTotal.toFixed(2)} de S/ ${presupuesto.toFixed(2)} (${pct.toFixed(1)}%)`
+    : 'Define un presupuesto para ver tu progreso.';
 
   renderGrafico(datos.filter(t => t.tipo === 'gasto'));
 }

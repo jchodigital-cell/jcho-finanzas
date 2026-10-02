@@ -5,10 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>JCHO Finanzas - Control de Gastos</title>
 <link rel="stylesheet" href="styles.css">
+<link rel="icon" href="logo.svg" type="image/svg+xml">
 </head>
 <body>
 <header>
-  <h1>💰 JCHO Finanzas</h1>
+  <img src="logo.svg" alt="Logo JCHO" width="70" height="70">
+  <h1>JCHO Finanzas</h1>
   <p>Control de ingresos y gastos personales</p>
 </header>
 
@@ -43,9 +45,20 @@
     </form>
   </section>
 
+  <section class="presupuesto">
+    <h2>Presupuesto mensual (gastos)</h2>
+    <div class="presupuesto-controles">
+      <input type="number" id="presupuesto" placeholder="Ej: 1500" step="0.01" min="0">
+      <button id="guardar-presupuesto" type="button">Guardar</button>
+    </div>
+    <div class="barra"><div id="barra-presupuesto"></div></div>
+    <p id="texto-presupuesto"></p>
+  </section>
+
   <section class="filtros">
     <label for="filtro-mes">Filtrar por mes:</label>
     <input type="month" id="filtro-mes">
+    <input type="text" id="buscar" placeholder="🔍 Buscar descripción...">
     <button id="limpiar-filtro" type="button">Ver todo</button>
     <button id="exportar" type="button">Exportar CSV</button>
   </section>
