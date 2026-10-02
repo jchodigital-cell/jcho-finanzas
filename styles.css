@@ -1,0 +1,32 @@
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Arial, sans-serif; }
+body { background: #0f172a; color: #e2e8f0; min-height: 100vh; }
+header { text-align: center; padding: 30px 20px 10px; }
+header h1 { font-size: 2rem; }
+header p { color: #94a3b8; }
+main { max-width: 1000px; margin: 0 auto; padding: 20px; }
+.resumen { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 25px; }
+.card { background: #1e293b; border-radius: 12px; padding: 20px; text-align: center; }
+.card h2 { font-size: 0.9rem; text-transform: uppercase; color: #94a3b8; margin-bottom: 8px; }
+.card p { font-size: 1.6rem; font-weight: bold; }
+.balance p { color: #38bdf8; }
+.ingresos p { color: #4ade80; }
+.gastos p { color: #f87171; }
+.formulario, .filtros, .grafico, .lista { background: #1e293b; border-radius: 12px; padding: 20px; margin-bottom: 20px; }
+.formulario h2, .grafico h2, .lista h2 { margin-bottom: 15px; }
+form { display: flex; flex-wrap: wrap; gap: 10px; }
+form input, form select { padding: 10px; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: #e2e8f0; flex: 1 1 140px; }
+button { padding: 10px 18px; border: none; border-radius: 8px; background: #38bdf8; color: #0f172a; font-weight: bold; cursor: pointer; }
+button:hover { background: #7dd3fc; }
+.filtros { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.filtros input { padding: 8px; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: #e2e8f0; }
+.contenido { display: grid; grid-template-columns: 1fr 2fr; gap: 20px; }
+@media (max-width: 700px) { .contenido { grid-template-columns: 1fr; } }
+#lista-transacciones { list-style: none; }
+#lista-transacciones li { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid #334155; }
+#lista-transacciones li span.monto.ingreso { color: #4ade80; }
+#lista-transacciones li span.monto.gasto { color: #f87171; }
+#lista-transacciones button { background: #f87171; color: #fff; padding: 4px 10px; margin-left: 10px; }
+.sin-datos { color: #64748b; text-align: center; padding: 20px 0; }
+#leyenda { list-style: none; margin-top: 10px; }
+#leyenda li { display: flex; align-items: center; gap: 8px; padding: 3px 0; font-size: 0.9rem; }
+.dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JCHO Finanzas - Control de Gastos</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header>
+  <h1>💰 JCHO Finanzas</h1>
+  <p>Control de ingresos y gastos personales</p>
+</header>
+
+<main>
+  <section class="resumen">
+    <div class="card balance">
+      <h2>Balance</h2>
+      <p id="balance">S/ 0.00</p>
+    </div>
+    <div class="card ingresos">
+      <h2>Ingresos</h2>
+      <p id="total-ingresos">S/ 0.00</p>
+    </div>
+    <div class="card gastos">
+      <h2>Gastos</h2>
+      <p id="total-gastos">S/ 0.00</p>
+    </div>
+  </section>
+
+  <section class="formulario">
+    <h2>Nueva transacción</h2>
+    <form id="form-transaccion">
+      <select id="tipo" required>
+        <option value="ingreso">Ingreso</option>
+        <option value="gasto">Gasto</option>
+      </select>
+      <input type="number" id="monto" placeholder="Monto (S/)" step="0.01" min="0.01" required>
+      <select id="categoria" required></select>
+      <input type="date" id="fecha" required>
+      <input type="text" id="descripcion" placeholder="Descripción" maxlength="80">
+      <button type="submit">Agregar</button>
+    </form>
+  </section>
+
+  <section class="filtros">
+    <label for="filtro-mes">Filtrar por mes:</label>
+    <input type="month" id="filtro-mes">
+    <button id="limpiar-filtro" type="button">Ver todo</button>
+    <button id="exportar" type="button">Exportar CSV</button>
+  </section>
+
+  <section class="contenido">
+    <div class="grafico">
+      <h2>Gastos por categoría</h2>
+      <svg id="grafico-donut" viewBox="0 0 200 200" width="220" height="220"></svg>
+      <ul id="leyenda"></ul>
+    </div>
+    <div class="lista">
+      <h2>Transacciones</h2>
+      <ul id="lista-transacciones"></ul>
+      <p id="sin-datos" class="sin-datos">No hay transacciones registradas.</p>
+    </div>
+  </section>
+</main>
+
+<script src="app.js"></script>
+</body>
+</html>
