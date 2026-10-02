@@ -13,17 +13,13 @@ const ICONOS = {
 };
 const icono = c => ICONOS[c] || '💳';
 
-const SUPABASE_URL = 'https://gfkpeeoqkwtxliikxd.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_HnxQj7gQBYsvJXMEUGVGTg_U39f5Yro';
+const FIREBASE_URL = 'https://jcho-finanzas-default-rtdb.firebaseio.com';
 
 async function cargarNube() {
   try {
-    const r = await fetch(`${SUPABASE_URL}/rest/v1/datos?id=eq.principal`, {
-      headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` }
-    });
-    const rows = await r.json();
-    if (rows && rows.length) {
-      const d = rows[0];
+    const r = await fetch(`${FIREBASE_URL}/jcho.json`);
+    const d = await r.json();
+    if (d) {
       if (d.transacciones) transacciones = d.transacciones;
       if (d.presupuesto != null) presupuesto = d.presupuesto;
       if (d.meta_ahorro != null) metaAhorro = d.meta_ahorro;
@@ -42,10 +38,10 @@ async function cargarNube() {
 
 async function guardarNube() {
   try {
-    await fetch(`${SUPABASE_URL}/rest/v1/datos`, {
-      method: 'POST',
-      headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json', Prefer: 'resolution=merge-duplicates' },
-      body: JSON.stringify({ id: 'principal', transacciones, presupuesto, meta_ahorro: metaAhorro, ahorrado, mes_ahorro: mesActual, tema: localStorage.getItem('jcho-tema') || 'oscuro' })
+    await fetch(`${FIREBASE_URL}/jcho.json`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ transacciones, presupuesto, meta_ahorro: metaAhorro, ahorrado, mes_ahorro: mesActual, tema: localStorage.getItem('jcho-tema') || 'oscuro' })
     });
   } catch (e) { console.warn('No se pudo sincronizar', e); }
 }
