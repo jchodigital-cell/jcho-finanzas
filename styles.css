@@ -52,3 +52,15 @@ button:hover { transform: translateY(-2px); opacity: .9; }
 #leyenda { list-style: none; margin-top: 10px; }
 #leyenda li { display: flex; align-items: center; gap: 8px; padding: 3px 0; font-size: 0.9rem; }
 .dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
+@media print {
+  body { background: #fff; color: #000; }
+  .formulario, .filtros, .presupuesto, .ahorro, header p, #tema-btn, .grafico, .mensual h2 { display: none !important; }
+  header { padding: 0 0 10px; }
+  header img { width: 40px; height: 40px; }
+  .card, .lista { background: #fff; color: #000; border: 1px solid #ccc; }
+  .card p { color: #000; }
+  #lista-transacciones button { display: none; }
+  #lista-transacciones li span.monto.ingreso { color: #15803d; }
+  #lista-transacciones li span.monto.gasto { color: #b91c1c; }
+  .contenido { display: block; }
+}

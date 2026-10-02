@@ -93,6 +93,7 @@ $('guardar-presupuesto').addEventListener('click', () => {
 });
 $('limpiar-filtro').addEventListener('click', () => { $('filtro-mes').value = ''; render(); });
 $('exportar').addEventListener('click', exportarCSV);
+$('exportar-pdf').addEventListener('click', () => window.print());
 
 function guardar() {
   localStorage.setItem('jcho-transacciones', JSON.stringify(transacciones));
