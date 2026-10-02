@@ -6,9 +6,12 @@
 <title>JCHO Finanzas - Control de Gastos</title>
 <link rel="stylesheet" href="styles.css">
 <link rel="icon" href="logo.svg" type="image/svg+xml">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0f172a">
 </head>
 <body>
 <header>
+  <button id="tema-btn" type="button">☀️ Modo claro</button>
   <img src="logo.svg" alt="Logo JCHO" width="70" height="70">
   <h1>JCHO Finanzas</h1>
   <p>Control de ingresos y gastos personales</p>
@@ -80,6 +83,14 @@
       <h2>Gastos por categoría</h2>
       <svg id="grafico-donut" viewBox="0 0 200 200" width="220" height="220"></svg>
       <ul id="leyenda"></ul>
+    </div>
+    <div class="mensual">
+      <h2>📊 Ingresos vs Gastos por mes</h2>
+      <svg id="grafico-mensual" viewBox="0 0 600 260" width="100%" height="260"></svg>
+      <ul id="leyenda-mensual">
+        <li><span class="dot" style="background:#4ade80"></span>Ingresos</li>
+        <li><span class="dot" style="background:#f87171"></span>Gastos</li>
+      </ul>
     </div>
     <div class="lista">
       <h2>Transacciones</h2>

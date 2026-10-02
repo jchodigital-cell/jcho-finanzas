@@ -1,44 +1,50 @@
+:root { --bg: #0f172a; --card: #1e293b; --texto: #e2e8f0; --borde: #334155; --muted: #94a3b8; --input-bg: #0f172a; }
+body.claro { --bg: #f1f5f9; --card: #ffffff; --texto: #1e293b; --borde: #cbd5e1; --muted: #64748b; --input-bg: #f8fafc; }
 * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Arial, sans-serif; }
-body { background: #0f172a; color: #e2e8f0; min-height: 100vh; }
-header { text-align: center; padding: 30px 20px 10px; }
+body { background: var(--bg); color: var(--texto); min-height: 100vh; transition: background .3s; }
+header { text-align: center; padding: 30px 20px 10px; position: relative; }
+#tema-btn { position: absolute; top: 15px; right: 15px; background: var(--card); color: var(--texto); border: 1px solid var(--borde); }
 header h1 { font-size: 2rem; }
-header p { color: #94a3b8; }
+header p { color: var(--muted); }
 main { max-width: 1000px; margin: 0 auto; padding: 20px; }
 .resumen { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 25px; }
-.card { background: #1e293b; border-radius: 12px; padding: 20px; text-align: center; }
-.card h2 { font-size: 0.9rem; text-transform: uppercase; color: #94a3b8; margin-bottom: 8px; }
+.card { background: var(--card); border-radius: 12px; padding: 20px; text-align: center; }
+.card h2 { font-size: 0.9rem; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
 .card p { font-size: 1.6rem; font-weight: bold; }
 .balance p { color: #38bdf8; }
 .ingresos p { color: #4ade80; }
 .gastos p { color: #f87171; }
-.formulario, .filtros, .grafico, .lista { background: #1e293b; border-radius: 12px; padding: 20px; margin-bottom: 20px; }
+.formulario, .filtros, .grafico, .lista, .presupuesto, .ahorro, .mensual { background: var(--card); border-radius: 12px; padding: 20px; margin-bottom: 20px; }
 .formulario h2, .grafico h2, .lista h2 { margin-bottom: 15px; }
 form { display: flex; flex-wrap: wrap; gap: 10px; }
-form input, form select { padding: 10px; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: #e2e8f0; flex: 1 1 140px; }
+form input, form select { padding: 10px; border-radius: 8px; border: 1px solid var(--borde); background: var(--input-bg); color: var(--texto); flex: 1 1 140px; }
 button { padding: 10px 18px; border: none; border-radius: 8px; background: linear-gradient(135deg, #38bdf8, #818cf8); color: #fff; font-weight: bold; cursor: pointer; transition: transform .15s, opacity .15s; }
 button:hover { transform: translateY(-2px); opacity: .9; }
-.presupuesto { background: #1e293b; border-radius: 12px; padding: 20px; margin-bottom: 20px; }
+.presupuesto { background: var(--card);; padding: 20px; margin-bottom: 20px; }
 .presupuesto h2 { margin-bottom: 12px; font-size: 1.1rem; }
 .presupuesto-controles { display: flex; gap: 10px; margin-bottom: 12px; }
-.presupuesto input { padding: 10px; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: #e2e8f0; flex: 1; }
-.barra { background: #0f172a; border-radius: 999px; height: 16px; overflow: hidden; }
+.presupuesto input { padding: 10px; border-radius: 8px; border: 1px solid var(--borde); background: var(--input-bg); color: var(--texto); flex: 1; }
+.barra { background: var(--input-bg); border-radius: 999px; height: 16px; overflow: hidden; }
 #barra-presupuesto { height: 100%; width: 0%; background: linear-gradient(90deg, #4ade80, #fbbf24, #f87171); transition: width .4s; }
-#texto-presupuesto { margin-top: 8px; color: #94a3b8; font-size: .9rem; }
+#texto-presupuesto { margin-top: 8px; color: var(--muted); font-size: .9rem; }
 #barra-ahorro { height: 100%; width: 0%; background: linear-gradient(90deg, #38bdf8, #4ade80); transition: width .4s; }
-.ahorro { background: #1e293b; border-radius: 12px; padding: 20px; margin-bottom: 20px; }
+.ahorro { background: var(--card);; padding: 20px; margin-bottom: 20px; }
 .ahorro h2 { margin-bottom: 12px; font-size: 1.1rem; }
 .ahorro-controles { display: flex; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
-.ahorro input { padding: 10px; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: #e2e8f0; flex: 1 1 120px; }
+.ahorro input { padding: 10px; border-radius: 8px; border: 1px solid var(--borde); background: var(--input-bg); color: var(--texto); flex: 1 1 120px; }
 .reset { background: #475569 !important; }
-#texto-ahorro { margin-top: 8px; color: #94a3b8; font-size: .9rem; }
+#texto-ahorro { margin-top: 8px; color: var(--muted); font-size: .9rem; }
 .editar { background: #818cf8 !important; margin-right: 6px; }
-#buscar { padding: 8px; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: #e2e8f0; }
+#buscar { padding: 8px; border-radius: 8px; border: 1px solid var(--borde); background: var(--input-bg); color: var(--texto); }
 .filtros { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-.filtros input { padding: 8px; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: #e2e8f0; }
+.filtros input { padding: 8px; border-radius: 8px; border: 1px solid var(--borde); background: var(--input-bg); color: var(--texto); }
 .contenido { display: grid; grid-template-columns: 1fr 2fr; gap: 20px; }
+.mensual { grid-column: 1 / -1; }
+#leyenda-mensual { display: flex; gap: 20px; list-style: none; margin-top: 10px; }
+#leyenda-mensual li { display: flex; align-items: center; gap: 8px; font-size: 0.9rem; }
 @media (max-width: 700px) { .contenido { grid-template-columns: 1fr; } }
 #lista-transacciones { list-style: none; }
-#lista-transacciones li { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid #334155; }
+#lista-transacciones li { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid var(--borde); }
 #lista-transacciones li span.monto.ingreso { color: #4ade80; }
 #lista-transacciones li span.monto.gasto { color: #f87171; }
 #lista-transacciones button { background: #f87171; color: #fff; padding: 4px 10px; margin-left: 10px; }

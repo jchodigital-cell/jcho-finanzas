@@ -3,6 +3,15 @@ const CATEGORIAS = {
   gasto: ['Alimentación', 'Transporte', 'Vivienda', 'Salud', 'Educación', 'Colegio', 'Entretenimiento', 'Luz', 'Gas', 'Agua', 'Internet casa', 'Internet plan personal', 'Otros gastos']
 };
 const COLORES = ['#38bdf8', '#4ade80', '#f87171', '#fbbf24', '#a78bfa', '#f472b6', '#34d399', '#fb923c'];
+const ICONOS = {
+  'Salario': '💼', 'Ventas': '🛒', 'Inversiones': '📈', 'Otros ingresos': '💰',
+  'Arriendo casa Delicias': '🏠', 'Arriendo apartamento Protecho Salado': '🏢',
+  'Alimentación': '🍔', 'Transporte': '🚗', 'Vivienda': '🏘️', 'Salud': '🏥',
+  'Educación': '📚', 'Colegio': '🏫', 'Entretenimiento': '🎮', 'Luz': '💡',
+  'Gas': '🔥', 'Agua': '💧', 'Internet casa': '🏠📶', 'Internet plan personal': '📱',
+  'Otros gastos': '📦'
+};
+const icono = c => ICONOS[c] || '💳';
 
 let transacciones = JSON.parse(localStorage.getItem('jcho-transacciones') || '[]');
 let presupuesto = parseFloat(localStorage.getItem('jcho-presupuesto') || '0');
@@ -109,7 +118,7 @@ function render() {
   $('sin-datos').style.display = datos.length ? 'none' : 'block';
   [...datos].sort((a, b) => b.fecha.localeCompare(a.fecha)).forEach(t => {
     const li = document.createElement('li');
-    li.innerHTML = `<div><strong>${t.categoria}</strong> ${t.descripcion ? '— ' + escapeHtml(t.descripcion) : ''}<br><small>${t.fecha}</small></div>
+    li.innerHTML = `<div><strong>${icono(t.categoria)} ${t.categoria}</strong> ${t.descripcion ? '— ' + escapeHtml(t.descripcion) : ''}<br><small>${t.fecha}</small></div>
       <div><span class="monto ${t.tipo}">${t.tipo === 'gasto' ? '-' : '+'} ${fmt(t.monto)}</span><br><button class="editar" data-id="${t.id}">✎</button><button data-id="${t.id}">✕</button></div>`;
     li.querySelector('button:last-child').addEventListener('click', () => {
       transacciones = transacciones.filter(x => x.id !== t.id);
@@ -138,6 +147,7 @@ function render() {
     : 'Define un presupuesto para ver tu progreso.';
 
   renderGrafico(datos.filter(t => t.tipo === 'gasto'));
+  renderMensual();
 
   // Ahorro
   const pctAhorro = metaAhorro > 0 ? Math.min(100, (ahorrado / metaAhorro) * 100) : 0;
@@ -167,8 +177,32 @@ function renderGrafico(gastos) {
     const [x1, y1] = pol(a1, 80), [x2, y2] = pol(a2, 80), [x3, y3] = pol(a2, 50), [x4, y4] = pol(a1, 50);
     const grande = frac > 0.5 ? 1 : 0;
     svg.innerHTML += `<path d="M${x1},${y1} A80,80 0 ${grande} 1 ${x2},${y2} L${x3},${y3} A50,50 0 ${grande} 0 ${x4},${y4} Z" fill="${COLORES[i % COLORES.length]}"/>`;
-    leyenda.innerHTML += `<li><span class="dot" style="background:${COLORES[i % COLORES.length]}"></span>${cat}: S/ ${val.toFixed(2)} (${(frac * 100).toFixed(1)}%)</li>`;
+    leyenda.innerHTML += `<li><span class="dot" style="background:${COLORES[i % COLORES.length]}"></span>${icono(cat)} ${cat}: S/ ${val.toFixed(2)} (${(frac * 100).toFixed(1)}%)</li>`;
   });
+}
+
+function renderMensual() {
+  const por = {};
+  transacciones.forEach(t => {
+    const m = t.fecha.slice(0, 7);
+    por[m] = por[m] || { ing: 0, gas: 0 };
+    if (t.tipo === 'ingreso') por[m].ing += t.monto; else por[m].gas += t.monto;
+  });
+  const meses = Object.keys(por).sort().slice(-6);
+  const svg = $('grafico-mensual');
+  if (!meses.length) { svg.innerHTML = '<text x="300" y="130" fill="#64748b" text-anchor="middle">Sin datos</text>'; return; }
+  const max = Math.max(...meses.flatMap(m => [por[m].ing, por[m].gas]), 1);
+  const W = 600, H = 260, base = H - 30, ancho = W / meses.length;
+  let html = '';
+  meses.forEach((m, i) => {
+    const x = i * ancho + ancho / 2;
+    const hIng = (por[m].ing / max) * 200;
+    const hGas = (por[m].gas / max) * 200;
+    html += `<rect x="${x - 28}" y="${base - hIng}" width="24" height="${hIng}" rx="4" fill="#4ade80"/>`;
+    html += `<rect x="${x + 4}" y="${base - hGas}" width="24" height="${hGas}" rx="4" fill="#f87171"/>`;
+    html += `<text x="${x}" y="${H - 10}" fill="#94a3b8" text-anchor="middle" font-size="11">${m}</text>`;
+  });
+  svg.innerHTML = html;
 }
 
 function escapeHtml(s) {
@@ -186,5 +220,16 @@ function exportarCSV() {
   a.download = 'jcho-finanzas.csv';
   a.click();
 }
+
+// Tema claro/oscuro
+if (localStorage.getItem('jcho-tema') === 'claro') {
+  document.body.classList.add('claro');
+  $('tema-btn').textContent = '🌙 Modo oscuro';
+}
+$('tema-btn').addEventListener('click', () => {
+  const claro = document.body.classList.toggle('claro');
+  localStorage.setItem('jcho-tema', claro ? 'claro' : 'oscuro');
+  $('tema-btn').textContent = claro ? '🌙 Modo oscuro' : '☀️ Modo claro';
+});
 
 render();
