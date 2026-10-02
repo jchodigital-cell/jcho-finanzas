@@ -1,5 +1,5 @@
 const CATEGORIAS = {
-  ingreso: ['Salario', 'Ventas', 'Inversiones', 'Arriendo casa Delicias', 'Arriendo predio Salado', 'Otros ingresos'],
+  ingreso: ['Salario', 'Ventas', 'Inversiones', 'Arriendo casa Delicias', 'Arriendo apartamento Protecho Salado', 'Otros ingresos'],
   gasto: ['Alimentación', 'Transporte', 'Vivienda', 'Salud', 'Educación', 'Colegio', 'Entretenimiento', 'Luz', 'Gas', 'Agua', 'Internet casa', 'Internet plan personal', 'Otros gastos']
 };
 const COLORES = ['#38bdf8', '#4ade80', '#f87171', '#fbbf24', '#a78bfa', '#f472b6', '#34d399', '#fb923c'];
