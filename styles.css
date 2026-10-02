@@ -24,6 +24,13 @@ button:hover { transform: translateY(-2px); opacity: .9; }
 .barra { background: #0f172a; border-radius: 999px; height: 16px; overflow: hidden; }
 #barra-presupuesto { height: 100%; width: 0%; background: linear-gradient(90deg, #4ade80, #fbbf24, #f87171); transition: width .4s; }
 #texto-presupuesto { margin-top: 8px; color: #94a3b8; font-size: .9rem; }
+#barra-ahorro { height: 100%; width: 0%; background: linear-gradient(90deg, #38bdf8, #4ade80); transition: width .4s; }
+.ahorro { background: #1e293b; border-radius: 12px; padding: 20px; margin-bottom: 20px; }
+.ahorro h2 { margin-bottom: 12px; font-size: 1.1rem; }
+.ahorro-controles { display: flex; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
+.ahorro input { padding: 10px; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: #e2e8f0; flex: 1 1 120px; }
+.reset { background: #475569 !important; }
+#texto-ahorro { margin-top: 8px; color: #94a3b8; font-size: .9rem; }
 .editar { background: #818cf8 !important; margin-right: 6px; }
 #buscar { padding: 8px; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: #e2e8f0; }
 .filtros { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }

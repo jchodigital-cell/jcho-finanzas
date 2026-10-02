@@ -9,7 +9,10 @@ let presupuesto = parseFloat(localStorage.getItem('jcho-presupuesto') || '0');
 let editId = null;
 
 const $ = id => document.getElementById(id);
+let metaAhorro = parseFloat(localStorage.getItem('jcho-meta-ahorro') || '0');
+let ahorrado = parseFloat(localStorage.getItem('jcho-ahorrado') || '0');
 if (presupuesto > 0) $('presupuesto').value = presupuesto;
+if (metaAhorro > 0) $('meta-ahorro').value = metaAhorro;
 const form = $('form-transaccion');
 const lista = $('lista-transacciones');
 
@@ -50,6 +53,21 @@ form.addEventListener('submit', e => {
 
 $('filtro-mes').addEventListener('change', render);
 $('buscar').addEventListener('input', render);
+$('aportar').addEventListener('click', () => {
+  ahorrado += parseFloat($('aporte-ahorro').value) || 0;
+  metaAhorro = parseFloat($('meta-ahorro').value) || 0;
+  localStorage.setItem('jcho-ahorrado', ahorrado);
+  localStorage.setItem('jcho-meta-ahorro', metaAhorro);
+  $('aporte-ahorro').value = '';
+  render();
+});
+$('reiniciar-ahorro').addEventListener('click', () => {
+  ahorrado = 0; metaAhorro = 0;
+  localStorage.setItem('jcho-ahorrado', 0);
+  localStorage.setItem('jcho-meta-ahorro', 0);
+  $('meta-ahorro').value = '';
+  render();
+});
 $('guardar-presupuesto').addEventListener('click', () => {
   presupuesto = parseFloat($('presupuesto').value) || 0;
   localStorage.setItem('jcho-presupuesto', presupuesto);
@@ -111,6 +129,13 @@ function render() {
     : 'Define un presupuesto para ver tu progreso.';
 
   renderGrafico(datos.filter(t => t.tipo === 'gasto'));
+
+  // Ahorro
+  const pctAhorro = metaAhorro > 0 ? Math.min(100, (ahorrado / metaAhorro) * 100) : 0;
+  $('barra-ahorro').style.width = pctAhorro + '%';
+  $('texto-ahorro').textContent = metaAhorro > 0
+    ? `Has ahorrado S/ ${ahorrado.toFixed(2)} de S/ ${metaAhorro.toFixed(2)} (${pctAhorro.toFixed(1)}%)`
+    : 'Define una meta y registra tus aportes.';
 }
 
 function renderGrafico(gastos) {
