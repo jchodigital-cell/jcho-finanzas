@@ -13,6 +13,56 @@ const ICONOS = {
 };
 const icono = c => ICONOS[c] || '💳';
 
+const SUPABASE_URL = 'https://gfkpeeoqkwtxliikxd.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_HnxQj7gQBYsvJXMEUGVGTg_U39f5Yro';
+
+async function cargarNube() {
+  try {
+    const r = await fetch(`${SUPABASE_URL}/rest/v1/datos?id=eq.principal`, {
+      headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` }
+    });
+    const rows = await r.json();
+    if (rows && rows.length) {
+      const d = rows[0];
+      if (d.transacciones) transacciones = d.transacciones;
+      if (d.presupuesto != null) presupuesto = d.presupuesto;
+      if (d.meta_ahorro != null) metaAhorro = d.meta_ahorro;
+      if (d.mes_ahorro === new Date().toISOString().slice(0, 7) && d.ahorrado != null) ahorrado = d.ahorrado;
+      if (d.tema) localStorage.setItem('jcho-tema', d.tema);
+      guardarLocal();
+      if (presupuesto > 0) $('presupuesto').value = presupuesto;
+      if (metaAhorro > 0) $('meta-ahorro').value = metaAhorro;
+      if (localStorage.getItem('jcho-tema') === 'claro') { document.body.classList.add('claro'); $('tema-btn').textContent = '🌙 Modo oscuro'; }
+      render();
+    } else {
+      guardarNube(); // subir datos locales si la nube está vacía
+    }
+  } catch (e) { console.warn('Sin conexión a la nube', e); }
+}
+
+async function guardarNube() {
+  try {
+    await fetch(`${SUPABASE_URL}/rest/v1/datos`, {
+      method: 'POST',
+      headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json', Prefer: 'resolution=merge-duplicates' },
+      body: JSON.stringify({ id: 'principal', transacciones, presupuesto, meta_ahorro: metaAhorro, ahorrado, mes_ahorro: mesActual, tema: localStorage.getItem('jcho-tema') || 'oscuro' })
+    });
+  } catch (e) { console.warn('No se pudo sincronizar', e); }
+}
+
+function guardarLocal() {
+  localStorage.setItem('jcho-transacciones', JSON.stringify(transacciones));
+  localStorage.setItem('jcho-presupuesto', presupuesto);
+  localStorage.setItem('jcho-meta-ahorro', metaAhorro);
+  localStorage.setItem('jcho-ahorrado', ahorrado);
+  localStorage.setItem('jcho-mes-ahorro', mesActual);
+}
+
+function guardar() {
+  guardarLocal();
+  guardarNube();
+}
+
 let transacciones = JSON.parse(localStorage.getItem('jcho-transacciones') || '[]');
 let presupuesto = parseFloat(localStorage.getItem('jcho-presupuesto') || '0');
 let editId = null;
@@ -73,31 +123,24 @@ $('buscar').addEventListener('input', render);
 $('aportar').addEventListener('click', () => {
   ahorrado += parseFloat($('aporte-ahorro').value) || 0;
   metaAhorro = parseFloat($('meta-ahorro').value) || 0;
-  localStorage.setItem('jcho-ahorrado', ahorrado);
-  localStorage.setItem('jcho-mes-ahorro', mesActual);
-  localStorage.setItem('jcho-meta-ahorro', metaAhorro);
   $('aporte-ahorro').value = '';
+  guardar();
   render();
 });
 $('reiniciar-ahorro').addEventListener('click', () => {
   ahorrado = 0; metaAhorro = 0;
-  localStorage.setItem('jcho-ahorrado', 0);
-  localStorage.setItem('jcho-meta-ahorro', 0);
   $('meta-ahorro').value = '';
+  guardar();
   render();
 });
 $('guardar-presupuesto').addEventListener('click', () => {
   presupuesto = parseFloat($('presupuesto').value) || 0;
-  localStorage.setItem('jcho-presupuesto', presupuesto);
+  guardar();
   render();
 });
 $('limpiar-filtro').addEventListener('click', () => { $('filtro-mes').value = ''; render(); });
 $('exportar').addEventListener('click', exportarCSV);
 $('exportar-pdf').addEventListener('click', () => window.print());
-
-function guardar() {
-  localStorage.setItem('jcho-transacciones', JSON.stringify(transacciones));
-}
 
 function transaccionesFiltradas() {
   const mes = $('filtro-mes').value;
@@ -237,6 +280,8 @@ $('tema-btn').addEventListener('click', () => {
   const claro = document.body.classList.toggle('claro');
   localStorage.setItem('jcho-tema', claro ? 'claro' : 'oscuro');
   $('tema-btn').textContent = claro ? '🌙 Modo oscuro' : '☀️ Modo claro';
+  guardarNube();
 });
 
 render();
+cargarNube();
