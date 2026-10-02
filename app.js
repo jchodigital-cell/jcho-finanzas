@@ -147,6 +147,11 @@ function render() {
     ? `Gastaste S/ ${gastosTotal.toFixed(2)} de S/ ${presupuesto.toFixed(2)} (${pct.toFixed(1)}%)`
     : 'Define un presupuesto para ver tu progreso.';
 
+  // Datos para el PDF
+  const mesFiltro = $('filtro-mes').value;
+  $('reporte-fecha').textContent = 'Período: ' + (mesFiltro || 'Todo el historial') + ' — Generado el ' + new Date().toLocaleDateString('es-PE');
+  $('reporte-presupuesto').textContent = $('texto-presupuesto').textContent;
+
   renderGrafico(datos.filter(t => t.tipo === 'gasto'));
   renderMensual();
 
@@ -156,6 +161,7 @@ function render() {
   $('texto-ahorro').textContent = metaAhorro > 0
     ? `Has ahorrado S/ ${ahorrado.toFixed(2)} de S/ ${metaAhorro.toFixed(2)} (${pctAhorro.toFixed(1)}%)`
     : 'Define una meta y registra tus aportes.';
+  $('reporte-ahorro').textContent = $('texto-ahorro').textContent;
 }
 
 function renderGrafico(gastos) {
