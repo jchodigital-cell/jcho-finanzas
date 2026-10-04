@@ -220,7 +220,7 @@ function render() {
   $('sin-datos').style.display = datos.length ? 'none' : 'block';
   [...datos].sort((a, b) => b.fecha.localeCompare(a.fecha)).forEach(t => {
     const li = document.createElement('li');
-    li.innerHTML = `<div><strong>${icono(t.categoria)} ${t.categoria}</strong> ${t.descripcion ? '— ' + escapeHtml(t.descripcion) : ''}<br><small>${t.fecha}</small></div>
+    li.innerHTML = `<div><strong>${icono(t.categoria)} ${t.categoria}</strong> ${t.descripcion ? '— ' + escapeHtml(t.descripcion) : ''} ${t.recurrente ? '🔁' : ''}<br><small>${t.fecha} · ${t.cuenta || 'Efectivo'}</small></div>
       <div><span class="monto ${t.tipo}">${t.tipo === 'gasto' ? '-' : '+'} ${fmt(t.monto)}</span><br><button class="editar" data-id="${t.id}">✎</button><button data-id="${t.id}">✕</button></div>`;
     li.querySelector('button:last-child').addEventListener('click', () => {
       transacciones = transacciones.filter(x => x.id !== t.id);
