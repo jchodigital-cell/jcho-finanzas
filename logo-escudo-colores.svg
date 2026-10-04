@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 170">
+<rect width="200" height="170" rx="8" fill="#0a0a0a"/>
+<path d="M100 18 L158 42 V82 C158 112 134 132 100 146 C66 132 42 112 42 82 V42 Z" fill="none" stroke="#cbd5e1" stroke-width="1.5"/>
+<text x="100" y="88" text-anchor="middle" font-family="Georgia" font-size="30" font-weight="bold">
+<tspan fill="#3b82f6">J</tspan><tspan fill="#22c55e">C</tspan><tspan fill="#fb923c">H</tspan><tspan fill="#fb923c">O</tspan>
+</text>
+<text x="100" y="150" text-anchor="middle" font-family="Georgia" font-size="18" font-weight="bold" letter-spacing="2">
+<tspan fill="#3b82f6">J</tspan><tspan fill="#22c55e">C</tspan><tspan fill="#fb923c">H</tspan><tspan fill="#fb923c">O</tspan>
+</text>
+<text x="100" y="166" text-anchor="middle" fill="#94a3b8" font-family="Arial" font-size="10" letter-spacing="4">FINANZAS</text>
+</svg>

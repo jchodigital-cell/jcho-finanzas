@@ -163,9 +163,9 @@ $('moneda').addEventListener('change', () => {
     pagos.forEach(p => {
       const diff = p.dia - hoy;
       if (diff >= 0 && diff <= 3) {
-        new Notification('🔔 JCHO Finanzas', { body: `¡${p.nombre} vence en ${diff} día(s)! Monto: S/ ${p.monto.toFixed(2)}`, icon: 'logo.webp' });
+        new Notification('🔔 JCHO Finanzas', { body: `¡${p.nombre} vence en ${diff} día(s)! Monto: S/ ${p.monto.toFixed(2)}`, icon: 'logo.svg' });
       } else if (diff < 0 && diff >= -1) {
-        new Notification('⚠️ JCHO Finanzas', { body: `¡${p.nombre} está vencido! Monto: S/ ${p.monto.toFixed(2)}`, icon: 'logo.webp' });
+        new Notification('⚠️ JCHO Finanzas', { body: `¡${p.nombre} está vencido! Monto: S/ ${p.monto.toFixed(2)}`, icon: 'logo.svg' });
       }
     });
   }
