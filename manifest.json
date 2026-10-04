@@ -4,8 +4,8 @@
   "description": "Control de ingresos y gastos personales",
   "start_url": ".",
   "display": "standalone",
-  "background_color": "#0f172a",
-  "theme_color": "#0f172a",
+  "background_color": "#0b3a53",
+  "theme_color": "#0b3a53",
   "icons": [
     { "src": "logo.webp", "sizes": "any", "type": "image/webp", "purpose": "any" }
   ]
