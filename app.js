@@ -423,6 +423,12 @@ try {
   });
 } catch (e) { console.warn('Auth no configurado', e); }
 
+$('ingresar').addEventListener('click', () => {
+  const b = $('bienvenida');
+  b.style.opacity = '0';
+  setTimeout(() => b.style.display = 'none', 500);
+});
+
 // Tema claro/oscuro
 if (localStorage.getItem('jcho-tema') === 'claro') {
   document.body.classList.add('claro');
