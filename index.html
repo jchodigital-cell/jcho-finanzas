@@ -12,6 +12,7 @@
 <body>
 <header>
   <button id="tema-btn" type="button">☀️ Modo claro</button>
+  <button id="login-btn" type="button" style="left:15px;right:auto;">🔐 Entrar con Google</button>
   <img src="logo.svg" alt="Logo JCHO" width="70" height="70">
   <h1>JCHO Finanzas</h1>
   <p>Control de ingresos y gastos personales</p>
@@ -66,6 +67,19 @@
     </div>
     <div class="barra"><div id="barra-ahorro"></div></div>
     <p id="texto-ahorro"></p>
+    <h3 style="margin-top:15px">📅 Historial de ahorro</h3>
+    <ul id="historial-ahorro"></ul>
+  </section>
+
+  <section class="pagos">
+    <h2>🔔 Pagos próximos</h2>
+    <div class="ahorro-controles">
+      <input type="text" id="pago-nombre" placeholder="Servicio (ej: Luz)">
+      <input type="number" id="pago-monto" placeholder="Monto" step="0.01" min="0">
+      <input type="number" id="pago-dia" placeholder="Día de vencimiento" min="1" max="31">
+      <button id="agregar-pago" type="button">Agregar</button>
+    </div>
+    <ul id="lista-pagos"></ul>
   </section>
 
   <section class="presupuesto">
@@ -82,6 +96,13 @@
     <label for="filtro-mes">Filtrar por mes:</label>
     <input type="month" id="filtro-mes">
     <input type="text" id="buscar" placeholder="🔍 Buscar descripción...">
+    <label>Moneda:
+      <select id="moneda">
+        <option value="PEN">S/ Soles</option>
+        <option value="USD">$ Dólares</option>
+        <option value="EUR">€ Euros</option>
+      </select>
+    </label>
     <button id="limpiar-filtro" type="button">Ver todo</button>
     <button id="exportar" type="button">Exportar CSV</button>
     <button id="exportar-pdf" type="button">Exportar PDF</button>
@@ -109,6 +130,8 @@
   </section>
 </main>
 
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="app.js"></script>
 </body>
 </html>

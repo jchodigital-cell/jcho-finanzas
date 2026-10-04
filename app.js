@@ -12,12 +12,19 @@ const ICONOS = {
   'Otros gastos': '📦'
 };
 const icono = c => ICONOS[c] || '💳';
+const MONEDAS = { PEN: { s: 'S/', r: 1 }, USD: { s: '$', r: 0.27 }, EUR: { s: '€', r: 0.25 } };
+let monedaSel = localStorage.getItem('jcho-moneda') || 'PEN';
+let historialAhorro = JSON.parse(localStorage.getItem('jcho-historial-ahorro') || '{}');
+let pagos = JSON.parse(localStorage.getItem('jcho-pagos') || '[]');
+let authToken = null;
+const fmtMoneda = n => (MONEDAS[monedaSel].s + ' ' + (n * MONEDAS[monedaSel].r).toFixed(2));
 
 const FIREBASE_URL = 'https://jcho-finanzas-default-rtdb.firebaseio.com';
 
 async function cargarNube() {
   try {
-    const r = await fetch(`${FIREBASE_URL}/jcho.json`);
+    const url = `${FIREBASE_URL}/jcho.json` + (authToken ? `?auth=${authToken}` : '');
+    const r = await fetch(url);
     const d = await r.json();
     if (d) {
       if (d.transacciones) transacciones = d.transacciones;
@@ -25,9 +32,13 @@ async function cargarNube() {
       if (d.meta_ahorro != null) metaAhorro = d.meta_ahorro;
       if (d.mes_ahorro === new Date().toISOString().slice(0, 7) && d.ahorrado != null) ahorrado = d.ahorrado;
       if (d.tema) localStorage.setItem('jcho-tema', d.tema);
+      if (d.historial_ahorro) historialAhorro = d.historial_ahorro;
+      if (d.pagos) pagos = d.pagos;
+      if (d.moneda) monedaSel = d.moneda;
       guardarLocal();
       if (presupuesto > 0) $('presupuesto').value = presupuesto;
       if (metaAhorro > 0) $('meta-ahorro').value = metaAhorro;
+      if (monedaSel) $('moneda').value = monedaSel;
       if (localStorage.getItem('jcho-tema') === 'claro') { document.body.classList.add('claro'); $('tema-btn').textContent = '🌙 Modo oscuro'; }
       render();
     } else {
@@ -38,10 +49,11 @@ async function cargarNube() {
 
 async function guardarNube() {
   try {
-    await fetch(`${FIREBASE_URL}/jcho.json`, {
+    const url = `${FIREBASE_URL}/jcho.json` + (authToken ? `?auth=${authToken}` : '');
+    await fetch(url, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ transacciones, presupuesto, meta_ahorro: metaAhorro, ahorrado, mes_ahorro: mesActual, tema: localStorage.getItem('jcho-tema') || 'oscuro' })
+      body: JSON.stringify({ transacciones, presupuesto, meta_ahorro: metaAhorro, ahorrado, mes_ahorro: mesActual, tema: localStorage.getItem('jcho-tema') || 'oscuro', moneda: monedaSel, historial_ahorro: historialAhorro, pagos })
     });
   } catch (e) { console.warn('No se pudo sincronizar', e); }
 }
@@ -52,6 +64,9 @@ function guardarLocal() {
   localStorage.setItem('jcho-meta-ahorro', metaAhorro);
   localStorage.setItem('jcho-ahorrado', ahorrado);
   localStorage.setItem('jcho-mes-ahorro', mesActual);
+  localStorage.setItem('jcho-moneda', monedaSel);
+  localStorage.setItem('jcho-historial-ahorro', JSON.stringify(historialAhorro));
+  localStorage.setItem('jcho-pagos', JSON.stringify(pagos));
 }
 
 function guardar() {
@@ -117,7 +132,9 @@ form.addEventListener('submit', e => {
 $('filtro-mes').addEventListener('change', render);
 $('buscar').addEventListener('input', render);
 $('aportar').addEventListener('click', () => {
-  ahorrado += parseFloat($('aporte-ahorro').value) || 0;
+  const aporte = parseFloat($('aporte-ahorro').value) || 0;
+  ahorrado += aporte;
+  historialAhorro[mesActual] = (historialAhorro[mesActual] || 0) + aporte;
   metaAhorro = parseFloat($('meta-ahorro').value) || 0;
   $('aporte-ahorro').value = '';
   guardar();
@@ -126,6 +143,21 @@ $('aportar').addEventListener('click', () => {
 $('reiniciar-ahorro').addEventListener('click', () => {
   ahorrado = 0; metaAhorro = 0;
   $('meta-ahorro').value = '';
+  guardar();
+  render();
+});
+$('moneda').addEventListener('change', () => {
+  monedaSel = $('moneda').value;
+  guardar();
+  render();
+});
+$('agregar-pago').addEventListener('click', () => {
+  const nombre = $('pago-nombre').value.trim();
+  const monto = parseFloat($('pago-monto').value) || 0;
+  const dia = parseInt($('pago-dia').value);
+  if (!nombre || !dia) return alert('Ingresa nombre y día de vencimiento.');
+  pagos.push({ nombre, monto, dia });
+  $('pago-nombre').value = ''; $('pago-monto').value = ''; $('pago-dia').value = '';
   guardar();
   render();
 });
@@ -149,7 +181,7 @@ function render() {
   const datos = transaccionesFiltradas();
   const ingresos = datos.filter(t => t.tipo === 'ingreso').reduce((s, t) => s + t.monto, 0);
   const gastos = datos.filter(t => t.tipo === 'gasto').reduce((s, t) => s + t.monto, 0);
-  const fmt = n => 'S/ ' + n.toFixed(2);
+  const fmt = fmtMoneda;
   $('total-ingresos').textContent = fmt(ingresos);
   $('total-gastos').textContent = fmt(gastos);
   $('balance').textContent = fmt(ingresos - gastos);
@@ -183,7 +215,7 @@ function render() {
   const pct = presupuesto > 0 ? Math.min(100, (gastosTotal / presupuesto) * 100) : 0;
   $('barra-presupuesto').style.width = pct + '%';
   $('texto-presupuesto').textContent = presupuesto > 0
-    ? `Gastaste S/ ${gastosTotal.toFixed(2)} de S/ ${presupuesto.toFixed(2)} (${pct.toFixed(1)}%)`
+    ? `Gastaste ${fmtMoneda(gastosTotal)} de ${fmtMoneda(presupuesto)} (${pct.toFixed(1)}%)`
     : 'Define un presupuesto para ver tu progreso.';
 
   // Datos para el PDF
@@ -198,9 +230,29 @@ function render() {
   const pctAhorro = metaAhorro > 0 ? Math.min(100, (ahorrado / metaAhorro) * 100) : 0;
   $('barra-ahorro').style.width = pctAhorro + '%';
   $('texto-ahorro').textContent = metaAhorro > 0
-    ? `Has ahorrado S/ ${ahorrado.toFixed(2)} de S/ ${metaAhorro.toFixed(2)} (${pctAhorro.toFixed(1)}%)`
+    ? `Has ahorrado ${fmtMoneda(ahorrado)} de ${fmtMoneda(metaAhorro)} (${pctAhorro.toFixed(1)}%)`
     : 'Define una meta y registra tus aportes.';
   $('reporte-ahorro').textContent = $('texto-ahorro').textContent;
+
+  // Historial de ahorro
+  $('historial-ahorro').innerHTML = '';
+  Object.entries(historialAhorro).sort().reverse().slice(0, 6).forEach(([mes, monto]) => {
+    $('historial-ahorro').innerHTML += `<li>📅 ${mes} — ${fmtMoneda(monto)}</li>`;
+  });
+  if (!Object.keys(historialAhorro).length) $('historial-ahorro').innerHTML = '<li style="color:var(--muted)">Sin aportes aún.</li>';
+
+  // Pagos próximos
+  const hoy = new Date().getDate();
+  $('lista-pagos').innerHTML = '';
+  [...pagos].sort((a, b) => a.dia - b.dia).forEach(p => {
+    const diff = p.dia - hoy;
+    const estado = diff < 0 ? '🔴 Vencido' : diff <= 5 ? '🟠 Próximo' : '🟢 OK';
+    const li = document.createElement('li');
+    li.innerHTML = `<span>${p.nombre} — día ${p.dia} (${fmtMoneda(p.monto)}) <b>${estado}</b></span> <button data-i="${i}" style="padding:2px 8px">✕</button>`;
+    li.querySelector('button').addEventListener('click', () => { pagos.splice(pagos.indexOf(p), 1); guardar(); render(); });
+    $('lista-pagos').appendChild(li);
+  });
+  if (!pagos.length) $('lista-pagos').innerHTML = '<li style="color:var(--muted)">Sin pagos registrados.</li>';
 }
 
 function renderGrafico(gastos) {
@@ -223,7 +275,7 @@ function renderGrafico(gastos) {
     const [x1, y1] = pol(a1, 80), [x2, y2] = pol(a2, 80), [x3, y3] = pol(a2, 50), [x4, y4] = pol(a1, 50);
     const grande = frac > 0.5 ? 1 : 0;
     svg.innerHTML += `<path d="M${x1},${y1} A80,80 0 ${grande} 1 ${x2},${y2} L${x3},${y3} A50,50 0 ${grande} 0 ${x4},${y4} Z" fill="${COLORES[i % COLORES.length]}"/>`;
-    leyenda.innerHTML += `<li><span class="dot" style="background:${COLORES[i % COLORES.length]}"></span>${icono(cat)} ${cat}: S/ ${val.toFixed(2)} (${(frac * 100).toFixed(1)}%)</li>`;
+    leyenda.innerHTML += `<li><span class="dot" style="background:${COLORES[i % COLORES.length]}"></span>${icono(cat)} ${cat}: ${fmtMoneda(val)} (${(frac * 100).toFixed(1)}%)</li>`;
   });
 }
 
@@ -266,6 +318,34 @@ function exportarCSV() {
   a.download = 'jcho-finanzas.csv';
   a.click();
 }
+
+// Login con Google (Firebase Auth)
+const API_KEY_FIREBASE = 'COLOCAR_API_KEY';
+let usuarioActivo = null;
+try {
+  firebase.initializeApp({
+    apiKey: API_KEY_FIREBASE,
+    authDomain: 'jcho-finanzas.firebaseapp.com',
+    databaseURL: FIREBASE_URL,
+    projectId: 'jcho-finanzas'
+  });
+  firebase.auth().onAuthStateChanged(async u => {
+    usuarioActivo = u;
+    if (u) {
+      authToken = await u.getIdToken();
+      $('login-btn').textContent = '👋 ' + (u.displayName || 'Salir');
+      cargarNube();
+    } else {
+      authToken = null;
+      $('login-btn').textContent = '🔐 Entrar con Google';
+    }
+  });
+  $('login-btn').addEventListener('click', async () => {
+    if (usuarioActivo) { firebase.auth().signOut(); return; }
+    try { await firebase.auth().signInWithPopup(new firebase.auth.GoogleAuthProvider()); }
+    catch (e) { alert('No se pudo iniciar sesión: ' + e.message); }
+  });
+} catch (e) { console.warn('Auth no configurado', e); }
 
 // Tema claro/oscuro
 if (localStorage.getItem('jcho-tema') === 'claro') {
