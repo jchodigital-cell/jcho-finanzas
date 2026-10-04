@@ -116,7 +116,9 @@ form.addEventListener('submit', e => {
     monto: parseFloat($('monto').value),
     categoria: $('categoria').value,
     fecha: $('fecha').value,
-    descripcion: $('descripcion').value.trim()
+    descripcion: $('descripcion').value.trim(),
+    cuenta: $('cuenta').value,
+    recurrente: $('recurrente').checked
   };
   if (editId) {
     transacciones = transacciones.map(t => t.id === editId ? nueva : t);
@@ -183,6 +185,11 @@ $('moneda').addEventListener('change', () => {
   guardar();
   render();
   revisarNotificaciones();
+});
+$('compartir').addEventListener('click', () => {
+  const mesFiltro = $('filtro-mes').value || 'Todo el historial';
+  const texto = `📊 *JCHO Finanzas* - ${mesFiltro}\n💰 Ingresos: ${$('total-ingresos').textContent}\n💸 Gastos: ${$('total-gastos').textContent}\n💵 Balance: ${$('balance').textContent}\n\nhttps://jchodigital-cell.github.io/jcho-finanzas/`;
+  window.open('https://wa.me/?text=' + encodeURIComponent(texto), '_blank');
 });
 $('guardar-presupuesto').addEventListener('click', () => {
   presupuesto = parseFloat($('presupuesto').value) || 0;
@@ -256,6 +263,52 @@ function render() {
     ? `Has ahorrado ${fmtMoneda(ahorrado)} de ${fmtMoneda(metaAhorro)} (${pctAhorro.toFixed(1)}%)`
     : 'Define una meta y registra tus aportes.';
   $('reporte-ahorro').textContent = $('texto-ahorro').textContent;
+
+  // Transacciones recurrentes: copiarlas al mes actual si aún no existen
+  const mesActualStr = new Date().toISOString().slice(0, 7);
+  const recurrentes = transacciones.filter(t => t.recurrente);
+  const yaCopiadas = transacciones.some(t => t.recurrente && t.fecha.startsWith(mesActualStr));
+  if (recurrentes.length && !yaCopiadas) {
+    const mesAnterior = new Date(new Date().getFullYear(), new Date().getMonth() - 1, 1).toISOString().slice(0, 7);
+    let agregadas = 0;
+    recurrentes.filter(t => t.fecha.startsWith(mesAnterior)).forEach(t => {
+      transacciones.push({ ...t, id: Date.now() + Math.random(), fecha: new Date().toISOString().slice(0, 10) });
+      agregadas++;
+    });
+    if (agregadas) { guardar(); render(); return; }
+  }
+
+  // Métricas
+  const gastosDia = {};
+  datos.filter(t => t.tipo === 'gasto').forEach(t => gastosDia[t.fecha] = (gastosDia[t.fecha] || 0) + t.monto);
+  const diasConGasto = Object.keys(gastosDia).length || 1;
+  $('m-promedio').textContent = fmtMoneda(gastos / diasConGasto);
+  const porMes = {};
+  transacciones.forEach(t => {
+    const m = t.fecha.slice(0, 7);
+    porMes[m] = porMes[m] || { ing: 0, gas: 0 };
+    if (t.tipo === 'ingreso') porMes[m].ing += t.monto; else porMes[m].gas += t.monto;
+  });
+  const mejor = Object.entries(porMes).sort((a, b) => (b[1].ing - b[1].gas) - (a[1].ing - a[1].gas))[0];
+  $('m-mejormes').textContent = mejor ? mejor[0] : '-';
+  const gastosTodos = transacciones.filter(t => t.tipo === 'gasto');
+  const mayor = gastosTodos.reduce((max, t) => t.monto > (max?.monto || 0) ? t : max, null);
+  $('m-mayor').textContent = mayor ? fmtMoneda(mayor.monto) : '-';
+  const meses = Object.keys(porMes).sort();
+  if (meses.length >= 2) {
+    const a = porMes[meses[meses.length - 2]], b = porMes[meses[meses.length - 1]];
+    const ga = a.gas, gb = b.gas;
+    const dif = ga > 0 ? ((gb - ga) / ga * 100) : 0;
+    $('m-tendencia').textContent = (dif >= 0 ? '📈 +' : '📉 ') + dif.toFixed(0) + '%';
+  } else $('m-tendencia').textContent = '-';
+
+  // Saldos por cuenta
+  const cuentas = {};
+  datos.forEach(t => {
+    const c = t.cuenta || 'Efectivo';
+    cuentas[c] = (cuentas[c] || 0) + (t.tipo === 'ingreso' ? t.monto : -t.monto);
+  });
+  $('saldos-cuentas').innerHTML = Object.entries(cuentas).map(([c, v]) => `<li>${c} <b style="color:${v >= 0 ? '#4ade80' : '#f87171'}">${fmtMoneda(v)}</b></li>`).join('') || '<li style="color:var(--muted)">Sin movimientos.</li>';
 
   // Historial de ahorro
   $('historial-ahorro').innerHTML = '';

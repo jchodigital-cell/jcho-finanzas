@@ -51,10 +51,31 @@
       </select>
       <input type="number" id="monto" placeholder="Monto (S/)" step="0.01" min="0.01" required>
       <select id="categoria" required></select>
+      <select id="cuenta">
+        <option>Efectivo</option>
+        <option>Banco</option>
+        <option>Yape</option>
+        <option>Plin</option>
+        <option>Tarjeta</option>
+      </select>
+      <label title="Repetir mensualmente"><input type="checkbox" id="recurrente"> 🔁 Recurrente</label>
       <input type="date" id="fecha" required>
       <input type="text" id="descripcion" placeholder="Descripción" maxlength="80">
       <button type="submit">Agregar</button>
     </form>
+  </section>
+
+  <section class="metricas">
+    <h2>📈 Métricas</h2>
+    <div class="resumen" id="metricas-grid">
+      <div class="card"><h2>Gasto promedio/día</h2><p id="m-promedio">S/ 0.00</p></div>
+      <div class="card"><h2>Mejor mes</h2><p id="m-mejormes">-</p></div>
+      <div class="card"><h2>Mayor gasto</h2><p id="m-mayor">S/ 0.00</p></div>
+      <div class="card"><h2>Tendencia vs mes ant.</h2><p id="m-tendencia">-</p></div>
+    </div>
+    <h3 style="margin:10px 0">💼 Saldos por cuenta</h3>
+    <ul id="saldos-cuentas"></ul>
+    <button id="compartir" type="button">📤 Compartir en WhatsApp</button>
   </section>
 
   <section class="ahorro">
