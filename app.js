@@ -23,7 +23,8 @@ const FIREBASE_URL = 'https://jcho-finanzas-default-rtdb.firebaseio.com';
 
 async function cargarNube() {
   try {
-    const url = `${FIREBASE_URL}/jcho.json` + (authToken ? `?auth=${authToken}` : '');
+    const path = usuarioActivo ? `usuarios/${usuarioActivo.uid}` : 'usuarios/anon';
+    const url = `${FIREBASE_URL}/${path}.json` + (authToken ? `?auth=${authToken}` : '');
     const r = await fetch(url);
     const d = await r.json();
     if (d) {
@@ -49,7 +50,8 @@ async function cargarNube() {
 
 async function guardarNube() {
   try {
-    const url = `${FIREBASE_URL}/jcho.json` + (authToken ? `?auth=${authToken}` : '');
+    const path = usuarioActivo ? `usuarios/${usuarioActivo.uid}` : 'usuarios/anon';
+    const url = `${FIREBASE_URL}/${path}.json` + (authToken ? `?auth=${authToken}` : '');
     await fetch(url, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
