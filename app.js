@@ -153,7 +153,26 @@ $('moneda').addEventListener('change', () => {
   guardar();
   render();
 });
-$('agregar-pago').addEventListener('click', () => {
+  // Notificaciones locales de vencimientos
+  function revisarNotificaciones() {
+    if (!('Notification' in window) || Notification.permission !== 'granted' || !pagos.length) return;
+    const hoy = new Date().getDate();
+    pagos.forEach(p => {
+      const diff = p.dia - hoy;
+      if (diff >= 0 && diff <= 3) {
+        new Notification('🔔 JCHO Finanzas', { body: `¡${p.nombre} vence en ${diff} día(s)! Monto: S/ ${p.monto.toFixed(2)}`, icon: 'logo.svg' });
+      } else if (diff < 0 && diff >= -1) {
+        new Notification('⚠️ JCHO Finanzas', { body: `¡${p.nombre} está vencido! Monto: S/ ${p.monto.toFixed(2)}`, icon: 'logo.svg' });
+      }
+    });
+  }
+  $('activar-notificaciones').addEventListener('click', async () => {
+    if (!('Notification' in window)) return alert('Tu navegador no soporta notificaciones.');
+    const perm = await Notification.requestPermission();
+    if (perm === 'granted') { alert('✅ Notificaciones activadas.'); revisarNotificaciones(); }
+    else alert('❌ Permiso denegado.');
+  });
+  $('agregar-pago').addEventListener('click', () => {
   const nombre = $('pago-nombre').value.trim();
   const monto = parseFloat($('pago-monto').value) || 0;
   const dia = parseInt($('pago-dia').value);
@@ -363,3 +382,4 @@ $('tema-btn').addEventListener('click', () => {
 
 render();
 cargarNube();
+setTimeout(revisarNotificaciones, 3000);
