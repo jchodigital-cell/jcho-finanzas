@@ -320,7 +320,7 @@ function exportarCSV() {
 }
 
 // Login con Google (Firebase Auth)
-const API_KEY_FIREBASE = 'COLOCAR_API_KEY';
+const API_KEY_FIREBASE = 'AIzaSyDuMubxZf5C9w_gR7khh8Mqe8aczFU0DOg';
 let usuarioActivo = null;
 try {
   firebase.initializeApp({
