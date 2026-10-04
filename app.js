@@ -37,6 +37,7 @@ async function cargarNube() {
       if (d.pagos) pagos = d.pagos;
       if (d.moneda) monedaSel = d.moneda;
       guardarLocal();
+      revisarNotificaciones();
       if (presupuesto > 0) $('presupuesto').value = presupuesto;
       if (metaAhorro > 0) $('meta-ahorro').value = metaAhorro;
       if (monedaSel) $('moneda').value = monedaSel;
@@ -181,6 +182,7 @@ $('moneda').addEventListener('change', () => {
   $('pago-nombre').value = ''; $('pago-monto').value = ''; $('pago-dia').value = '';
   guardar();
   render();
+  revisarNotificaciones();
 });
 $('guardar-presupuesto').addEventListener('click', () => {
   presupuesto = parseFloat($('presupuesto').value) || 0;
