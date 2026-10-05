@@ -344,7 +344,7 @@ function render() {
     const diff = p.dia - hoy;
     const estado = diff < 0 ? '🔴 Vencido' : diff <= 5 ? '🟠 Próximo' : '🟢 OK';
     const li = document.createElement('li');
-    li.innerHTML = `<span>${p.nombre} — día ${p.dia} (${fmtMoneda(p.monto)}) <b>${estado}</b></span> <button data-i="${i}" style="padding:2px 8px">✕</button>`;
+    li.innerHTML = `<span>${p.nombre} — día ${p.dia} (${fmtMoneda(p.monto)}) <b>${estado}</b></span> <button style="padding:2px 8px">✕</button>`;
     li.querySelector('button').addEventListener('click', () => { pagos.splice(pagos.indexOf(p), 1); guardar(); render(); });
     $('lista-pagos').appendChild(li);
   });
