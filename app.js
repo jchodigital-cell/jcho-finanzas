@@ -164,9 +164,13 @@ $('moneda').addEventListener('change', () => {
     pagos.forEach(p => {
       const diff = p.dia - hoy;
       if (diff >= 0 && diff <= 3) {
-        new Notification('🔔 JCHO Finanzas', { body: `¡${p.nombre} vence en ${diff} día(s)! Monto: S/ ${p.monto.toFixed(2)}`, icon: 'logo.svg' });
+        const msg = `¡${p.nombre} vence en ${diff} día(s)! Monto: S/ ${p.monto.toFixed(2)}`;
+        if ('Notification' in window && Notification.permission === 'granted') new Notification('🔔 JCHO Finanzas', { body: msg, icon: 'logo.svg' });
+        mostrarBanner('🔔 ' + msg);
       } else if (diff < 0 && diff >= -1) {
-        new Notification('⚠️ JCHO Finanzas', { body: `¡${p.nombre} está vencido! Monto: S/ ${p.monto.toFixed(2)}`, icon: 'logo.svg' });
+        const msg = `¡${p.nombre} está vencido! Monto: S/ ${p.monto.toFixed(2)}`;
+        if ('Notification' in window && Notification.permission === 'granted') new Notification('⚠️ JCHO Finanzas', { body: msg, icon: 'logo.svg' });
+        mostrarBanner('⚠️ ' + msg);
       }
     });
   }
@@ -176,6 +180,12 @@ $('moneda').addEventListener('change', () => {
     if (perm === 'granted') { alert('✅ Notificaciones activadas.'); revisarNotificaciones(); }
     else alert('❌ Permiso denegado.');
   });
+  // Banner alternativo
+  let banner = document.createElement('div');
+  banner.id = 'noti-banner';
+  banner.style.cssText = 'position:fixed;top:10px;left:50%;transform:translateX(-50%);background:#fbbf24;color:#0f172a;padding:10px 20px;border-radius:8px;z-index:9999;display:none;max-width:90%;text-align:center;font-weight:bold';
+  document.body.appendChild(banner);
+  function mostrarBanner(msg) { banner.textContent = msg; banner.style.display = 'block'; setTimeout(() => banner.style.display = 'none', 5000); }
   $('agregar-pago').addEventListener('click', () => {
   const nombre = $('pago-nombre').value.trim();
   const monto = parseFloat($('pago-monto').value) || 0;
