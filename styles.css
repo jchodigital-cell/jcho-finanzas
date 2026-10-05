@@ -80,11 +80,14 @@ section { animation: aparecer .4s ease; }
 .dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
 #reporte-pdf { display: none; }
 @media print {
-  body { background: #fff; color: #000; }
+  body.reporte-transacciones .formulario, body.reporte-transacciones .metricas, body.reporte-transacciones .ahorro, body.reporte-transacciones .pagos, body.reporte-transacciones .presupuesto, body.reporte-transacciones .filtros, body.reporte-transacciones .mensual, body.reporte-transacciones .grafico { display: none !important; }
+  body.reporte-presupuesto .formulario, body.reporte-presupuesto .metricas, body.reporte-presupuesto .ahorro, body.reporte-presupuesto .pagos, body.reporte-presupuesto .filtros, body.reporte-presupuesto .contenido { display: none !important; }
+  body.reporte-ahorro .formulario, body.reporte-ahorro .metricas, body.reporte-ahorro .presupuesto, body.reporte-ahorro .pagos, body.reporte-ahorro .filtros, body.reporte-ahorro .contenido { display: none !important; }
+  body.reporte-pagos .formulario, body.reporte-pagos .metricas, body.reporte-pagos .presupuesto, body.reporte-pagos .ahorro, body.reporte-pagos .filtros, body.reporte-pagos .contenido { display: none !important; }
   #reporte-pdf { display: block; text-align: center; margin-bottom: 20px; }
   #reporte-pdf h1 { color: #000; }
   #reporte-pdf p { color: #333; margin: 4px 0; }
-  .formulario, .filtros, .presupuesto, .ahorro, header, .grafico, .mensual h2 { display: none !important; }
+  .formulario, .filtros, header, #tema-btn, #login-btn, .grafico, .mensual h2 { display: none !important; }
   .card, .lista { background: #fff; color: #000; border: 1px solid #ccc; }
   .card p { color: #000; }
   #lista-transacciones button { display: none; }

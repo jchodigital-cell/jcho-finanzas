@@ -1,0 +1,59 @@
+<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Informe Técnico JCHO Finanzas</title><style>
+body{font-family:Arial;max-width:800px;margin:30px auto;padding:0 20px;color:#1e293b;line-height:1.6}
+h1{color:#0f172a;border-bottom:3px solid #22c55e;padding-bottom:8px}
+h2{color:#0ea5e9}
+.logo{width:110px;display:block;margin:0 auto 10px}
+.firma{margin-top:60px;border-top:2px solid #0f172a;width:250px;text-align:center;padding-top:5px;font-weight:bold}
+.pie{text-align:center;color:#64748b;font-size:12px;margin-top:40px}
+code{background:#f1f5f9;padding:2px 5px;border-radius:4px}
+</style></head><body>
+<img class="logo" src="logo.svg" alt="Logo JCHO">
+<h1>Informe Técnico — JCHO Finanzas</h1>
+<p><b>Cliente:</b> JCHO Finanzas<br><b>Fecha:</b> 04/10/2026<br><b>Sistema:</b> JCHO Finanzas</p>
+
+<h2>1. Resumen</h2>
+<p>JCHO Finanzas es una aplicación web (PWA) de finanzas personales que permite gestionar ingresos, gastos, ahorros, presupuestos y pagos recurrentes. Los datos se almacenan en la nube mediante Firebase Realtime Database y se sincronizan entre dispositivos. El login se realiza con Google.</p>
+
+<h2>2. Estructura del proyecto</h2>
+<ul>
+<li><code>index.html</code> — Estructura de la interfaz web</li>
+<li><code>styles.css</code> — Estilos y diseño responsivo</li>
+<li><code>app.js</code> — Lógica de negocio y sincronización</li>
+<li><code>manifest.json</code> — Configuración PWA</li>
+<li><code>logo.svg</code> — Logo oficial</li>
+</ul>
+
+<h2>3. Funcionalidades</h2>
+<ul>
+<li>Registro de transacciones (ingresos/gastos) con categorías, cuenta y recurrencia</li>
+<li>Filtros por mes, búsqueda y ordenamiento</li>
+<li>Gráfico de dona por categoría y barras mensuales</li>
+<li>Presupuesto mensual con barra de progreso</li>
+<li>Ahorro mensual con historial</li>
+<li>Recordatorios de pagos con notificaciones locales</li>
+<li>Exportación CSV y PDF</li>
+<li>Compartir resumen por WhatsApp</li>
+<li>Modo claro/oscuro</li>
+<li>Cambio de moneda (S/, $, €)</li>
+</ul>
+
+<h2>4. Arquitectura y sincronización</h2>
+<p>Los datos se guardan en Firebase Realtime Database bajo la ruta <code>usuarios/{uid}</code>. El login con Google (Firebase Auth) provee el ID de usuario. Las reglas de seguridad permiten lectura y escritura solo al usuario autenticado propietario de sus datos.</p>
+
+<h2>5. Seguridad</h2>
+<ul>
+<li>Login obligatorio con Google para sincronización</li>
+<li>Reglas de Firebase que restringen acceso por usuario</li>
+<li>Datos almacenados con cifrado en tránsito (HTTPS)</li>
+</ul>
+
+<h2>6. Despliegue</h2>
+<p>La aplicación se aloja en GitHub Pages: <code>https://jchodigital-cell.github.io/jcho-finanzas/</code></p>
+
+<h2>7. Conclusión</h2>
+<p>El sistema ofrece una experiencia profesional de finanzas personales, segura, multiplataforma y con respaldo en la nube.</p>
+
+<div class="firma">____________________<br>JCHO FINANZAS<br>Firma Digital</div>
+
+<div class="pie">Documento generado automáticamente — JCHO Finanzas © 2026</div>
+</body></html>

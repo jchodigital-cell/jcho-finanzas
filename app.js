@@ -14,7 +14,7 @@ const ICONOS = {
 const icono = c => ICONOS[c] || '💳';
 const MONEDAS = { PEN: { s: 'S/', r: 1 }, USD: { s: '$', r: 0.27 }, EUR: { s: '€', r: 0.25 } };
 let monedaSel = localStorage.getItem('jcho-moneda') || 'PEN';
-let historialAhorro = JSON.parse(localStorage.getItem('jcho-historial-ahorro') || '{}');
+let historialAhorro = JSON.parse(localStorage.getItem('jcho-historial-ahorro') || '[]');
 let pagos = JSON.parse(localStorage.getItem('jcho-pagos') || '[]');
 let authToken = null;
 const fmtMoneda = n => (MONEDAS[monedaSel].s + ' ' + (n * MONEDAS[monedaSel].r).toFixed(2));
@@ -33,7 +33,7 @@ async function cargarNube() {
       if (d.meta_ahorro != null) metaAhorro = d.meta_ahorro;
       if (d.mes_ahorro === new Date().toISOString().slice(0, 7) && d.ahorrado != null) ahorrado = d.ahorrado;
       if (d.tema) localStorage.setItem('jcho-tema', d.tema);
-      if (d.historial_ahorro) historialAhorro = d.historial_ahorro;
+      if (Array.isArray(d.historial_ahorro)) historialAhorro = d.historial_ahorro;
       if (d.pagos) pagos = d.pagos;
       if (d.moneda) monedaSel = d.moneda;
       guardarLocal();
@@ -139,7 +139,7 @@ $('buscar').addEventListener('input', render);
 $('aportar').addEventListener('click', () => {
   const aporte = parseFloat($('aporte-ahorro').value) || 0;
   ahorrado += aporte;
-  historialAhorro[mesActual] = (historialAhorro[mesActual] || 0) + aporte;
+  historialAhorro.push({ monto: aporte, fecha: new Date().toLocaleString('es-PE') });
   metaAhorro = parseFloat($('meta-ahorro').value) || 0;
   $('aporte-ahorro').value = '';
   guardar();
@@ -198,7 +198,15 @@ $('guardar-presupuesto').addEventListener('click', () => {
 });
 $('limpiar-filtro').addEventListener('click', () => { $('filtro-mes').value = ''; render(); });
 $('exportar').addEventListener('click', exportarCSV);
-$('exportar-pdf').addEventListener('click', () => window.print());
+function imprimirModulo(mod) {
+  document.body.classList.remove('reporte-transacciones','reporte-presupuesto','reporte-ahorro','reporte-pagos','reporte-metricas');
+  document.body.classList.add('reporte-' + mod);
+  window.print();
+}
+$('pdf-transacciones').addEventListener('click', () => imprimirModulo('transacciones'));
+$('pdf-presupuesto').addEventListener('click', () => imprimirModulo('presupuesto'));
+$('pdf-ahorro').addEventListener('click', () => imprimirModulo('ahorro'));
+$('pdf-pagos').addEventListener('click', () => imprimirModulo('pagos'));
 
 function transaccionesFiltradas() {
   const mes = $('filtro-mes').value;
@@ -246,7 +254,7 @@ function render() {
   $('barra-presupuesto').style.width = pct + '%';
   $('texto-presupuesto').textContent = presupuesto > 0
     ? `Gastaste ${fmtMoneda(gastosTotal)} de ${fmtMoneda(presupuesto)} (${pct.toFixed(1)}%)`
-    : 'Define un presupuesto para ver tu progreso.';
+    : `Has gastado ${fmtMoneda(gastosTotal)} en el período. Define un presupuesto para comparar.`;
 
   // Datos para el PDF
   const mesFiltro = $('filtro-mes').value;
@@ -261,7 +269,7 @@ function render() {
   $('barra-ahorro').style.width = pctAhorro + '%';
   $('texto-ahorro').textContent = metaAhorro > 0
     ? `Has ahorrado ${fmtMoneda(ahorrado)} de ${fmtMoneda(metaAhorro)} (${pctAhorro.toFixed(1)}%)`
-    : 'Define una meta y registra tus aportes.';
+    : `Has ahorrado ${fmtMoneda(ahorrado)}. Define una meta para ver tu progreso.`;
   $('reporte-ahorro').textContent = $('texto-ahorro').textContent;
 
   // Transacciones recurrentes: copiarlas al mes actual si aún no existen
@@ -312,10 +320,10 @@ function render() {
 
   // Historial de ahorro
   $('historial-ahorro').innerHTML = '';
-  Object.entries(historialAhorro).sort().reverse().slice(0, 6).forEach(([mes, monto]) => {
-    $('historial-ahorro').innerHTML += `<li>📅 ${mes} — ${fmtMoneda(monto)}</li>`;
+  historialAhorro.slice().reverse().forEach(a => {
+    $('historial-ahorro').innerHTML += `<li>💰 ${fmtMoneda(a.monto)} — ${a.fecha}</li>`;
   });
-  if (!Object.keys(historialAhorro).length) $('historial-ahorro').innerHTML = '<li style="color:var(--muted)">Sin aportes aún.</li>';
+  if (!historialAhorro.length) $('historial-ahorro').innerHTML = '<li style="color:var(--muted)">Sin aportes aún.</li>';
 
   // Pagos próximos
   const hoy = new Date().getDate();
