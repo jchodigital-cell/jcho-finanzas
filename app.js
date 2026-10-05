@@ -192,6 +192,17 @@ $('compartir').addEventListener('click', () => {
   const texto = `📊 *JCHO Finanzas* - ${mesFiltro}\n💰 Ingresos: ${$('total-ingresos').textContent}\n💸 Gastos: ${$('total-gastos').textContent}\n💵 Balance: ${$('balance').textContent}\n\nhttps://jchodigital-cell.github.io/jcho-finanzas/`;
   window.open('https://wa.me/?text=' + encodeURIComponent(texto), '_blank');
 });
+$('eliminar-historial-ahorro').addEventListener('click', () => {
+  historialAhorro = [];
+  guardar();
+  render();
+});
+$('eliminar-presupuesto').addEventListener('click', () => {
+  presupuesto = 0;
+  $('presupuesto').value = '';
+  guardar();
+  render();
+});
 $('guardar-presupuesto').addEventListener('click', () => {
   presupuesto = parseFloat($('presupuesto').value) || 0;
   guardar();
