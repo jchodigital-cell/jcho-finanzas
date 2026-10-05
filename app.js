@@ -15,6 +15,7 @@ const icono = c => ICONOS[c] || '💳';
 const MONEDAS = { PEN: { s: 'S/', r: 1 }, USD: { s: '$', r: 0.27 }, EUR: { s: '€', r: 0.25 } };
 let monedaSel = localStorage.getItem('jcho-moneda') || 'PEN';
 let historialAhorro = JSON.parse(localStorage.getItem('jcho-historial-ahorro') || '[]');
+if (!Array.isArray(historialAhorro)) historialAhorro = [];
 let pagos = JSON.parse(localStorage.getItem('jcho-pagos') || '[]');
 let authToken = null;
 const fmtMoneda = n => (MONEDAS[monedaSel].s + ' ' + (n * MONEDAS[monedaSel].r).toFixed(2));
